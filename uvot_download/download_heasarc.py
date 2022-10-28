@@ -131,7 +131,7 @@ def download_heasarc(heasarc_files, unzip=True, download_all=False,
             obsid = heasarc_table['obsid'][i]
             starttime = heasarc_table['start_time'][i]
             
-            if start_date == None:
+            if start_date != None:
                 if type(start_date) in [float, int]:
                     # Assume it is MJD
                     start_dt = Time(start_date, format='MJD', scale='utc')
@@ -150,7 +150,7 @@ def download_heasarc(heasarc_files, unzip=True, download_all=False,
                 if Time(starttime) < start_dt: 
                     continue
             
-            if stop_date == None:
+            if stop_date != None:
                 if type(stop_date) in [float, int]:
                     # Assume it is MJD
                     stop_dt = Time(stop_date, format='MJD', scale='utc')
