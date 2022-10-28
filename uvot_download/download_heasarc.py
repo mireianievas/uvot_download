@@ -130,23 +130,25 @@ def download_heasarc(heasarc_files, unzip=True, download_all=False,
             
             obsid = heasarc_table['obsid'][i]
             starttime = heasarc_table['start_time'][i]
-            
+
             if start_date != None:
                 if type(start_date) in [float, int]:
                     # Assume it is MJD
                     start_dt = Time(start_date, format='MJD', scale='utc')
-                if type(start_date) == 'str':
+                elif type(start_date) in [str, np.str_]:
                     # Assume it is a string with the date
                     if " " in start_date:
-                        day,hour = start_dt.split(" ")
+                        day,hour = start_date.split(" ")
                     elif "T" in start_date:
-                        day,hour = start_dt.split("T")
+                        day,hour = start_date.split("T")
                     else:
-                        day  = start_dt
+                        day  = start_date
                         hour = "0:0:0"
-                    day = day.replace("-","/")
-                    start_dt = Time(f"{day}T{hour}", format='iso', scale='utc')
-                
+                    day = day.replace("/","-")
+                    start_dt = Time(f"{day}T{hour}", format='isot', scale='utc')
+                else:
+                    print(f'Unknown start_date format {start_date}')
+
                 if Time(starttime) < start_dt: 
                     continue
             
@@ -154,17 +156,19 @@ def download_heasarc(heasarc_files, unzip=True, download_all=False,
                 if type(stop_date) in [float, int]:
                     # Assume it is MJD
                     stop_dt = Time(stop_date, format='MJD', scale='utc')
-                if type(stop_date) == 'str':
+                elif type(stop_date) in [str, np.str_]:
                     # Assume it is a string with the date
                     if " " in stop_date:
-                        day,hour = stop_dt.split(" ")
+                        day,hour = stop_date.split(" ")
                     elif "T" in stop_date:
-                        day,hour = stop_dt.split("T")
+                        day,hour = stop_date.split("T")
                     else:
-                        day  = stop_dt
+                        day  = stop_date
                         hour = "0:0:0"
-                    day = day.replace("-","/")
-                    stop_dt = Time(f"{day}T{hour}", format='iso', scale='utc')
+                    day = day.replace("/","-")
+                    stop_dt = Time(f"{day}T{hour}", format='isot', scale='utc')
+                else:
+                    print(f'Unknown stop_date format {stop_date}')
                     
                 if Time(starttime) > stop_dt: 
                     continue
