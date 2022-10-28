@@ -16,7 +16,7 @@ conf = ConfigParser()
 conf.read(['setup.cfg'])
 metadata = dict(conf.items('metadata'))
 
-PACKAGENAME = metadata.get('package_name', 'uvot-download')
+PACKAGENAME = metadata.get('package_name', 'uvot_download')
 DESCRIPTION = metadata.get('description', 'Code to download UVOT data')
 AUTHOR = metadata.get('author', 'Lea Hagen')
 AUTHOR_EMAIL = metadata.get('author_email', '')
@@ -27,7 +27,7 @@ __minimum_python_version__ = metadata.get("minimum_python_version", "3.5")
 # Enforce Python version check - this is the same check as in __init__.py but
 # this one has to happen before importing ah_bootstrap.
 if sys.version_info < tuple((int(val) for val in __minimum_python_version__.split('.'))):
-    sys.stderr.write("ERROR: uvot-download requires Python {} or later\n".format(__minimum_python_version__))
+    sys.stderr.write("ERROR: uvot_download requires Python {} or later\n".format(__minimum_python_version__))
     sys.exit(1)
 
 # Import ah_bootstrap after the python version validation

@@ -108,7 +108,7 @@ release = package.__version__
 
 
 html_theme_options = {
-    'logotext1': 'uvot-download',  # white,  semi-bold
+    'logotext1': 'uvot_download',  # white,  semi-bold
     'logotext2': '',  # orange, light
     'logotext3': ':docs'   # white,  light
     }

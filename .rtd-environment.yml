@@ -1,4 +1,4 @@
-name: uvot-download
+name: uvot_download
 
 channels:
     - astropy
