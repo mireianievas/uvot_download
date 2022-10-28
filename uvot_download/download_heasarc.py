@@ -4,10 +4,10 @@ import glob
 import subprocess
 import pdb
 from astropy.io import ascii
-
+from astropy.time import Time
 
 def download_heasarc(heasarc_files, unzip=True, download_all=False,
-                         download_filters=None, min_exp=0.0):
+                     download_filters=None, start_date=None, stop_date=None, min_exp=0.0):
     """
     Using the observation table from query_heasarc, create a download script,
     download the data, and unzip everything.  All files will be saved into the
@@ -33,6 +33,26 @@ def download_heasarc(heasarc_files, unzip=True, download_all=False,
         If a filter is requested but the info isn't in the heasarc_file, it
         will be assumed that observations in that filter exist.  When set to
         the default (None), all data will be downloaded.
+    
+    start_date : starting datetime (UTC) to download (default=None)
+        allowed formats:
+            %Y-%m-%d %H:%M:%S
+            %Y/%m/%d %H:%M:%S
+            %Y-%m-%dT%H:%M:%S
+            %Y/%m/%dT%H:%M:%S
+            %Y-%m-%d (0:0:0 assumed as hour:minute:second)
+            %Y/%m/%d (0:0:0 assumed as hour:minute:second)
+            MJD
+            
+    stop_date : end datetime (UTC) to download (default=None)
+        allowed formats:
+            %Y-%m-%d %H:%M:%S
+            %Y/%m/%d %H:%M:%S
+            %Y-%m-%dT%H:%M:%S
+            %Y/%m/%dT%H:%M:%S
+            %Y-%m-%d
+            %Y/%m/%d
+            MJD
 
     min_exp : float (default=0.0)
         Only download data if the exposure time (for at least one filter) is
@@ -110,6 +130,44 @@ def download_heasarc(heasarc_files, unzip=True, download_all=False,
             
             obsid = heasarc_table['obsid'][i]
             starttime = heasarc_table['start_time'][i]
+            
+            if start_date == None:
+                if type(start_date) in [float, int]:
+                    # Assume it is MJD
+                    start_dt = Time(start_date, format='MJD', scale='utc')
+                if type(start_date) == 'str':
+                    # Assume it is a string with the date
+                    if " " in start_date:
+                        day,hour = start_dt.split(" ")
+                    elif "T" in start_date:
+                        day,hour = start_dt.split("T")
+                    else:
+                        day  = start_dt
+                        hour = "0:0:0"
+                    day = day.replace("-","/")
+                    start_dt = Time(f"{day}T{hour}", format='iso', scale='utc')
+                
+                if Time(starttime) < start_dt: 
+                    continue
+            
+            if stop_date == None:
+                if type(stop_date) in [float, int]:
+                    # Assume it is MJD
+                    stop_dt = Time(stop_date, format='MJD', scale='utc')
+                if type(stop_date) == 'str':
+                    # Assume it is a string with the date
+                    if " " in stop_date:
+                        day,hour = stop_dt.split(" ")
+                    elif "T" in stop_date:
+                        day,hour = stop_dt.split("T")
+                    else:
+                        day  = stop_dt
+                        hour = "0:0:0"
+                    day = day.replace("-","/")
+                    stop_dt = Time(f"{day}T{hour}", format='iso', scale='utc')
+                    
+                if Time(starttime) > stop_dt: 
+                    continue
         
             start_month = starttime[0:7]
             start_month = start_month.replace('-','_')
@@ -127,7 +185,6 @@ def download_heasarc(heasarc_files, unzip=True, download_all=False,
                     download_scr.write(wget_auxil + '\n')
 
         #run the download script here and put the results in the directories created at the beginning of the list
-
 
         # run download script
         # (but only if there are items to download)
